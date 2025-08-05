@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Light theme colors */
+  --text: #06040e;
+  --background: #f4f2fc;
+  --primary: #5b35cb;
+  --secondary: #e497ba;
+  --accent: #d55d70;
+  
+  /* Additional colors for better contrast */
+  --muted: #6b7280;
+  --muted-foreground: #374151;
+  --card: #ffffff;
+  --card-foreground: #06040e;
+  --border: #e5e7eb;
+  --input: #f9fafb;
+  --ring: #5b35cb;
+  
+  /* Success, warning, error colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  
+  --radius: 0.75rem;
+}
+
+.dark {
+  --text: #f1effd;
+  --background: #0b0815;
+  --primary: #7c5ce8;
+  --secondary: #c974a1;
+  --accent: #e36b7d;
+  
+  --muted: #9ca3af;
+  --muted-foreground: #d1d5db;
+  --card: #1f1b2e;
+  --card-foreground: #f1effd;
+  --border: #374151;
+  --input: #374151;
+  --ring: #7c5ce8;
+  
+  --success: #34d399;
+  --warning: #fbbf24;
+  --error: #f87171;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .glass {
+    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border border-white/20 dark:border-gray-700/20;
+  }
+  
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+  }
+  
+  .gradient-secondary {
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
