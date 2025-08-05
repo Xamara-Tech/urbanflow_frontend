@@ -22,38 +22,41 @@ import {
 
 const features = [
   {
-    icon: Building,
+    Icon: Building,
     title: 'Smart Building Management',
     description: 'Comprehensive building data and metadata visualization with interactive mapping.',
   },
   {
-    icon: Users,
+    Icon: Users,
     title: 'Community Feedback',
     description: 'Verified resident feedback system with sentiment analysis and thematic clustering.',
   },
   {
-    icon: BarChart3,
+    Icon: BarChart3,
     title: 'Data Analytics',
     description: 'Real-time statistics on walkability, noise levels, and development patterns.',
   },
   {
-    icon: Lightbulb,
+    Icon: Lightbulb,
     title: 'AI Suggestions',
     description: 'Intelligent recommendations for sustainable development based on community needs.',
   },
   {
-    icon: TreePine,
+    Icon: TreePine,
     title: 'Green Spaces',
     description: 'Promote biophilic design with green balconies and environmental sustainability.',
   },
   {
-    icon: MapPin,
+    Icon: MapPin,
     title: 'Walkability Simulation',
     description: 'Advanced pedestrian pathway analysis and safety ratings for better urban planning.',
   },
 ];
 
-const stats = [
+import { useEffect, useState } from 'react';
+import { apiClient } from '@/lib/api';
+
+const staticStats = [
   { name: 'Buildings Mapped', value: '2,500+' },
   { name: 'Community Feedback', value: '15,000+' },
   { name: 'Urban Planners', value: '150+' },
@@ -82,6 +85,21 @@ const userTypes = [
 ];
 
 export default function HomePage() {
+  const [stats, setStats] = useState(staticStats);
+
+  useEffect(() => {
+    apiClient.getStatistics().then((apiStats) => {
+      if (Array.isArray(apiStats) && apiStats.length > 0) {
+        setStats([
+          { name: 'Buildings Mapped', value: apiStats.length.toLocaleString() },
+          { name: 'Community Feedback', value: apiStats.reduce((sum, b) => sum + (b.feedback_count || 0), 0).toLocaleString() },
+          { name: 'Urban Planners', value: '150+' },
+          { name: 'Success Rate', value: '94%' },
+        ]);
+      }
+    }).catch(() => setStats(staticStats));
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -154,19 +172,22 @@ export default function HomePage() {
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
-              {features.map((feature) => (
-                <div key={feature.title} className="flex flex-col">
-                  <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
-                    <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary/10">
-                      <feature.icon className="h-5 w-5 text-primary" />
-                    </div>
-                    {feature.title}
-                  </dt>
-                  <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
-                    <p className="flex-auto">{feature.description}</p>
-                  </dd>
-                </div>
-              ))}
+              {features.map((feature) => {
+                const Icon = feature.Icon;
+                return (
+                  <div key={feature.title} className="flex flex-col">
+                    <dt className="flex items-center gap-x-3 text-base font-semibold leading-7 text-foreground">
+                      <div className="h-10 w-10 flex items-center justify-center rounded-lg bg-primary/10">
+                        <Icon className="h-5 w-5 text-primary" />
+                      </div>
+                      {feature.title}
+                    </dt>
+                    <dd className="mt-4 flex flex-auto flex-col text-base leading-7 text-muted-foreground">
+                      <p className="flex-auto">{feature.description}</p>
+                    </dd>
+                  </div>
+                );
+              })}
             </dl>
           </div>
         </div>

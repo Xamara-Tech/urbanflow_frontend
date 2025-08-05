@@ -9,10 +9,11 @@ export default function ResidentsPage() {
         <p className="text-lg text-gray-700 mb-6 text-center">
           Stay connected with your community, share feedback, and access important updates about your building and neighborhood.
         </p>
-        <Link href="/residents/feedback/1">
-          <a className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors mb-4 shadow">
-            Give Feedback
-          </a>
+        <Link
+          href="/residents/feedback/1"
+          className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors mb-4 shadow"
+        >
+          Give Feedback
         </Link>
         <div className="mt-6 text-gray-500 text-sm text-center">
           Looking for more? Explore building updates and community events soon!

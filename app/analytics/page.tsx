@@ -5,34 +5,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  Building,
-  TreePine,
-  MapPin,
-  MessageSquare,
-  ThumbsUp,
-  ThumbsDown,
-  AlertTriangle,
-  CheckCircle
-} from 'lucide-react';
+// import { Progress } from '@/components/ui/progress';
 
-const overviewStats = [
+import { useEffect, useState } from 'react';
+import { TrendingUp, Users, Building, TreePine, MapPin, ThumbsUp, AlertTriangle, CheckCircle } from 'lucide-react';
+import { apiClient } from '@/lib/api';
+
+const staticOverviewStats = [
   {
     title: 'Community Engagement',
-    value: '94%',
-    change: '+12%',
+    value: '94',
+    change: '12',
     icon: Users,
     color: 'text-primary',
     description: 'Residents actively providing feedback'
   },
   {
     title: 'Green Space Demand',
-    value: '67%',
-    change: '+8%',
+    value: '67',
+    change: '8',
     icon: TreePine,
     color: 'text-success',
     description: 'Want more biophilic designs'
@@ -40,22 +31,22 @@ const overviewStats = [
   {
     title: 'Walkability Score',
     value: '3.8/5',
-    change: '+0.3',
+    change: '0.3',
     icon: MapPin,
     color: 'text-secondary',
     description: 'Average across all buildings'
   },
   {
     title: 'Positive Sentiment',
-    value: '78%',
-    change: '+15%',
+    value: '78',
+    change: '15',
     icon: ThumbsUp,
     color: 'text-accent',
     description: 'Of all community feedback'
   },
 ];
 
-const buildingInsights = [
+const staticBuildingInsights = [
   {
     building: 'Kilimani Mall',
     walkability_avg: 4.5,
@@ -94,7 +85,7 @@ const buildingInsights = [
   },
 ];
 
-const sentimentData = [
+const staticSentimentData = [
   { category: 'Green Spaces', positive: 85, neutral: 10, negative: 5 },
   { category: 'Walkability', positive: 62, neutral: 28, negative: 10 },
   { category: 'Noise Levels', positive: 34, neutral: 31, negative: 35 },
@@ -102,7 +93,7 @@ const sentimentData = [
   { category: 'Parking', positive: 43, neutral: 25, negative: 32 },
 ];
 
-const aiSuggestions = [
+const staticAiSuggestions = [
   {
     id: 1,
     building: 'Pine Towers',
@@ -142,6 +133,69 @@ const aiSuggestions = [
 ];
 
 export default function AnalyticsPage() {
+  const [overviewStats, setOverviewStats] = useState(staticOverviewStats);
+  const [buildingInsights, setBuildingInsights] = useState(staticBuildingInsights);
+  const [sentimentData, setSentimentData] = useState(staticSentimentData);
+  const [aiSuggestions, setAiSuggestions] = useState(staticAiSuggestions);
+
+  useEffect(() => {
+    // Fetch statistics overview
+    apiClient.getStatistics().then((stats) => {
+      if (Array.isArray(stats) && stats.length > 0) {
+        // Map API stats to buildingInsights and overviewStats
+        setBuildingInsights(stats.map((b) => ({
+          building: b.building,
+          walkability_avg: b.walkability_avg,
+          green_space_demand_pct: b.green_space_demand_pct,
+          noise_complaints: b.noise_complaints,
+          sentiment: b.sentiment || 'positive',
+          feedback_count: b.feedback_count || 0,
+          top_requests: b.top_requests || [],
+        })));
+        setOverviewStats([
+          {
+            title: 'Community Engagement',
+            value: '94',
+            change: '12',
+            icon: Users,
+            color: 'text-primary',
+            description: 'Residents actively providing feedback',
+          },
+          {
+            title: 'Green Space Demand',
+            value: String(Math.round(stats.reduce((a, b) => a + (b.green_space_demand_pct || 0), 0) / stats.length)),
+            change: '8',
+            icon: TreePine,
+            color: 'text-success',
+            description: 'Want more biophilic designs',
+          },
+          {
+            title: 'Walkability Score',
+            value: (stats.reduce((a, b) => a + (b.walkability_avg || 0), 0) / stats.length).toFixed(1) + '/5',
+            change: '0.3',
+            icon: MapPin,
+            color: 'text-secondary',
+            description: 'Average across all buildings',
+          },
+          {
+            title: 'Positive Sentiment',
+            value: '78',
+            change: '15',
+            icon: ThumbsUp,
+            color: 'text-accent',
+            description: 'Of all community feedback',
+          },
+        ]);
+      }
+    }).catch(() => {
+      setOverviewStats(staticOverviewStats);
+      setBuildingInsights(staticBuildingInsights);
+    });
+
+    // Optionally fetch sentiment and suggestions if endpoints exist
+    // setSentimentData(staticSentimentData);
+    // setAiSuggestions(staticAiSuggestions);
+  }, []);
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive': return 'text-success';
@@ -241,14 +295,14 @@ export default function AnalyticsPage() {
                               <span>Walkability Score</span>
                               <span className="font-medium">{building.walkability_avg}/5.0</span>
                             </div>
-                            <Progress value={building.walkability_avg * 20} className="h-2" />
+                            {/* <Progress value={Number.isFinite(building.walkability_avg) ? Math.max(0, Math.min(100, building.walkability_avg * 20)) : 0} className="h-2" /> */}
                           </div>
                           <div>
                             <div className="flex justify-between text-sm mb-1">
                               <span>Green Space Demand</span>
                               <span className="font-medium">{building.green_space_demand_pct}%</span>
                             </div>
-                            <Progress value={building.green_space_demand_pct} className="h-2" />
+                            {/* <Progress value={Number.isFinite(building.green_space_demand_pct) ? Math.max(0, Math.min(100, building.green_space_demand_pct)) : 0} className="h-2" /> */}
                           </div>
                         </div>
                         

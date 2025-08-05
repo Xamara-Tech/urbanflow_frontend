@@ -21,8 +21,9 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { Design, Building as BuildingType } from '@/lib/types';
+import { apiClient } from '@/lib/api';
 
-const mockDesigns: Design[] = [
+const staticDesigns: Design[] = [
   {
     id: '1',
     building_id: '1',
@@ -61,7 +62,7 @@ const mockDesigns: Design[] = [
   }
 ];
 
-const mockBuildings: BuildingType[] = [
+const staticBuildings: BuildingType[] = [
   {
     id: '1',
     name: 'Pine Towers',
@@ -93,9 +94,22 @@ const mockBuildings: BuildingType[] = [
 ];
 
 export default function ArchitectsPage() {
-  const [designs, setDesigns] = useState<Design[]>(mockDesigns);
-  const [buildings, setBuildings] = useState<BuildingType[]>(mockBuildings);
+  const [designs, setDesigns] = useState<Design[]>(staticDesigns);
+  const [buildings, setBuildings] = useState<BuildingType[]>(staticBuildings);
   const [selectedTab, setSelectedTab] = useState('my-designs');
+
+  useEffect(() => {
+    apiClient.getDesigns().then((apiDesigns) => {
+      if (Array.isArray(apiDesigns) && apiDesigns.length > 0) {
+        setDesigns(apiDesigns);
+      }
+    }).catch(() => setDesigns(staticDesigns));
+    apiClient.getBuildings().then((apiBuildings) => {
+      if (Array.isArray(apiBuildings) && apiBuildings.length > 0) {
+        setBuildings(apiBuildings);
+      }
+    }).catch(() => setBuildings(staticBuildings));
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { Chatbot } from '@/components/chat/chatbot';
 import { 
   Building, 
@@ -24,7 +24,10 @@ import {
 } from 'lucide-react';
 import { Building as BuildingType, Design, Feedback } from '@/lib/types';
 
-const mockBuildings: BuildingType[] = [
+
+import { apiClient } from '@/lib/api';
+
+const staticBuildings: BuildingType[] = [
   {
     id: '1',
     name: 'Pine Towers',
@@ -69,7 +72,7 @@ const mockBuildings: BuildingType[] = [
   },
 ];
 
-const aiSuggestions = [
+const staticAiSuggestions = [
   {
     id: 1,
     building: 'Pine Towers',
@@ -117,35 +120,49 @@ const planningMetrics = [
     title: 'Community Engagement',
     value: 94,
     target: 90,
-    trend: '+12%',
+    trend: '+12',
     description: 'Residents actively providing feedback'
   },
   {
     title: 'Green Space Coverage',
     value: 67,
     target: 75,
-    trend: '+8%',
+    trend: '+8',
     description: 'Buildings with biophilic design elements'
   },
   {
     title: 'Walkability Score',
     value: 72,
     target: 80,
-    trend: '+15%',
+    trend: '+15',
     description: 'Average walkability across all areas'
   },
   {
     title: 'Noise Compliance',
     value: 78,
     target: 85,
-    trend: '+5%',
+    trend: '+5',
     description: 'Buildings meeting noise level standards'
   },
 ];
 
 export default function PlannersPage() {
-  const [buildings, setBuildings] = useState<BuildingType[]>(mockBuildings);
+  const [buildings, setBuildings] = useState<BuildingType[]>(staticBuildings);
+  const [aiSuggestions, setAiSuggestions] = useState(staticAiSuggestions);
   const [selectedTab, setSelectedTab] = useState('overview');
+
+  useEffect(() => {
+    apiClient.getBuildings().then((apiBuildings) => {
+      if (Array.isArray(apiBuildings) && apiBuildings.length > 0) {
+        setBuildings(apiBuildings);
+      }
+    }).catch(() => setBuildings(staticBuildings));
+    apiClient.getSuggestions().then((apiSuggestions) => {
+      if (Array.isArray(apiSuggestions) && apiSuggestions.length > 0) {
+        setAiSuggestions(apiSuggestions);
+      }
+    }).catch(() => setAiSuggestions(staticAiSuggestions));
+  }, []);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -265,7 +282,7 @@ export default function PlannersPage() {
                             <span className="text-sm font-medium">{metric.value}%</span>
                           </div>
                         </div>
-                        <Progress value={metric.value} className="h-2 mb-1" />
+                        {/* <Progress value={metric.value} className="h-2 mb-1" /> */}
                         <div className="flex justify-between text-xs text-muted-foreground">
                           <span>{metric.description}</span>
                           <span>Target: {metric.target}%</span>

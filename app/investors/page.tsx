@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { Chatbot } from '@/components/chat/chatbot';
 import { 
   Building, 
@@ -24,7 +24,10 @@ import {
 } from 'lucide-react';
 import { Project, ROIAnalysis } from '@/lib/types';
 
-const mockProjects: Project[] = [
+
+import { apiClient } from '@/lib/api';
+
+const staticProjects: Project[] = [
   {
     id: '1',
     name: 'Pine Towers Renovation',
@@ -127,8 +130,16 @@ const investmentOpportunities = [
 ];
 
 export default function InvestorsPage() {
-  const [projects, setProjects] = useState<Project[]>(mockProjects);
+  const [projects, setProjects] = useState<Project[]>(staticProjects);
   const [selectedTab, setSelectedTab] = useState('projects');
+
+  useEffect(() => {
+    apiClient.getProjects().then((apiProjects) => {
+      if (Array.isArray(apiProjects) && apiProjects.length > 0) {
+        setProjects(apiProjects);
+      }
+    }).catch(() => setProjects(staticProjects));
+  }, []);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -300,7 +311,7 @@ export default function InvestorsPage() {
                         <span>Community Support</span>
                         <span>{project.community_support}%</span>
                       </div>
-                      <Progress value={project.community_support} className="h-2" />
+                      {/* <Progress value={project.community_support} className="h-2" /> */}
                     </div>
 
                     <div className="flex space-x-3">
@@ -456,7 +467,7 @@ export default function InvestorsPage() {
                             <span className="text-sm font-medium">{insight.value}%</span>
                           </div>
                         </div>
-                        <Progress value={insight.value} className="h-2 mb-1" />
+                        {/* <Progress value={insight.value} className="h-2 mb-1" /> */}
                         <p className="text-xs text-muted-foreground">{insight.description}</p>
                       </div>
                     ))}

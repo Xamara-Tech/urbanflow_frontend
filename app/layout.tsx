@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { Chatbot } from '@/components/chat/chatbot';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           {children}
+          <Chatbot context={{ type: 'general' }} />
           <Toaster />
         </ThemeProvider>
       </body>

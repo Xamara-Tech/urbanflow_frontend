@@ -19,7 +19,9 @@ import {
   Star
 } from 'lucide-react';
 
-const buildings = [
+import { apiClient } from '@/lib/api';
+
+const staticBuildings = [
   {
     id: '1',
     name: 'Pine Towers',
@@ -107,27 +109,38 @@ const zoneTypes = [
   { value: 'mixed', label: 'Mixed-Use', color: 'bg-accent/10 text-accent' },
 ];
 
+
 export default function BuildingsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedZone, setSelectedZone] = useState('all');
-  const [filteredBuildings, setFilteredBuildings] = useState(buildings);
+  const [buildings, setBuildings] = useState(staticBuildings);
+  const [filteredBuildings, setFilteredBuildings] = useState(staticBuildings);
+
+  useEffect(() => {
+    apiClient.getBuildings().then((apiBuildings) => {
+      if (Array.isArray(apiBuildings) && apiBuildings.length > 0) {
+        setBuildings(apiBuildings);
+        setFilteredBuildings(apiBuildings);
+      }
+    }).catch(() => {
+      setBuildings(staticBuildings);
+      setFilteredBuildings(staticBuildings);
+    });
+  }, []);
 
   useEffect(() => {
     let filtered = buildings;
-    
     if (searchTerm) {
       filtered = filtered.filter(building =>
         building.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         building.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
     if (selectedZone !== 'all') {
       filtered = filtered.filter(building => building.zone_type === selectedZone);
     }
-    
     setFilteredBuildings(filtered);
-  }, [searchTerm, selectedZone]);
+  }, [searchTerm, selectedZone, buildings]);
 
   const getRatingColor = (rating: number) => {
     if (rating >= 4) return 'text-success';

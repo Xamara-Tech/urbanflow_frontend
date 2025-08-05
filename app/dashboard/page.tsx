@@ -5,7 +5,7 @@ import { Header } from '@/components/layout/header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { 
   Building, 
   Users, 
@@ -18,33 +18,34 @@ import {
   AlertTriangle,
   Clock
 } from 'lucide-react';
+import { apiClient } from '@/lib/api';
 
-const stats = [
+const staticStats = [
   {
     title: 'Total Buildings',
     value: '2,547',
-    change: '+12%',
+    change: '12',
     icon: Building,
     color: 'text-primary',
   },
   {
     title: 'Community Feedback',
     value: '15,234',
-    change: '+24%',
+    change: '24',
     icon: MessageSquare,
     color: 'text-secondary',
   },
   {
     title: 'Active Projects',
     value: '156',
-    change: '+8%',
+    change: '8',
     icon: BarChart3,
     color: 'text-accent',
   },
   {
     title: 'AI Suggestions',
     value: '89',
-    change: '+15%',
+    change: '15',
     icon: Lightbulb,
     color: 'text-success',
   },
@@ -123,6 +124,45 @@ export default function DashboardPage() {
     role: 'Urban Planner',
     isVerified: true,
   });
+  const [stats, setStats] = useState(staticStats);
+
+  useEffect(() => {
+    apiClient.getStatistics().then((apiStats) => {
+      if (Array.isArray(apiStats) && apiStats.length > 0) {
+        // Map API stats to dashboard cards
+        setStats([
+          {
+            title: 'Total Buildings',
+            value: apiStats.length.toLocaleString(),
+            change: '12',
+            icon: Building,
+            color: 'text-primary',
+          },
+          {
+            title: 'Community Feedback',
+            value: apiStats.reduce((sum, b) => sum + (b.feedback_count || 0), 0).toLocaleString(),
+            change: '24',
+            icon: MessageSquare,
+            color: 'text-secondary',
+          },
+          {
+            title: 'Active Projects',
+            value: '156',
+            change: '8',
+            icon: BarChart3,
+            color: 'text-accent',
+          },
+          {
+            title: 'AI Suggestions',
+            value: '89',
+            change: '15',
+            icon: Lightbulb,
+            color: 'text-success',
+          },
+        ]);
+      }
+    }).catch(() => setStats(staticStats));
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -265,21 +305,21 @@ export default function DashboardPage() {
                     <p className="font-medium">Green Space Implementation</p>
                     <p className="text-sm text-muted-foreground">67%</p>
                   </div>
-                  <Progress value={67} className="h-2" />
+                  {/* <Progress value={67} className="h-2" /> */}
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="font-medium">Walkability Improvement</p>
                     <p className="text-sm text-muted-foreground">45%</p>
                   </div>
-                  <Progress value={45} className="h-2" />
+                  {/* <Progress value={45} className="h-2" /> */}
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <p className="font-medium">Noise Reduction</p>
                     <p className="text-sm text-muted-foreground">82%</p>
                   </div>
-                  <Progress value={82} className="h-2" />
+                  {/* <Progress value={82} className="h-2" /> */}
                 </div>
               </div>
             </CardContent>
